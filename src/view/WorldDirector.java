@@ -1,5 +1,6 @@
 package view;
 
+import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -54,12 +55,14 @@ public class WorldDirector extends JFrame
 	
 	public void start()
 	{
+		setPreferredSize(new Dimension(800, 600));
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setupWorld();
 		add(_canvas);
 		_time.start();
 		
 		pack();
+		
 		if (Toolkit.getDefaultToolkit().
 		        isFrameStateSupported(JFrame.MAXIMIZED_BOTH)) {
 			setExtendedState(getExtendedState() |
