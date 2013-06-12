@@ -59,6 +59,10 @@ public class OrientedBoundingBox {
         temp.setScale(new Vector3d(dimensions));
         T3D.mul(temp);
     }
+    
+    public OrientedBoundingBox(OrientedBoundingBox obb) {
+        T3D = new Transform3D(obb.T3D);
+    }
      
     public Point3f[] getVertices() {
         if (_vertices == null) {
