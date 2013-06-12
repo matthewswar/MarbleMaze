@@ -67,6 +67,7 @@ public class Stage extends BranchGroup
 		_player.forceAccumulator.y += -SPEED * _player.mass;
         _player.updateState(1f / WorldDirector.UPDATE_RATE);
         checkCollisions();
+        _player.forceAccumulator.set(0, 0, 0);
     }
     
     public void checkCollisions() {
@@ -82,7 +83,6 @@ public class Stage extends BranchGroup
         }
         
         _player.updateTransformGroup();
-        _player.forceAccumulator.set(0, 0, 0);
     }
     
     public Box[] getBoundaries()
