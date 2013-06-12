@@ -1,5 +1,7 @@
 package model;
 
+import java.util.ArrayList;
+
 import javax.media.j3d.BranchGroup;
 import javax.media.j3d.TransformGroup;
 import javax.vecmath.Color3f;
@@ -20,6 +22,7 @@ public class Stage extends BranchGroup
 	public static final float SPEED = 100f;
     private final Box[] _platforms;
     private final Box[] _walls;
+    private final ArrayList<Force> _forces;
     private final TransformGroup _TG;
     private final Marble _player;
     
@@ -46,6 +49,9 @@ public class Stage extends BranchGroup
         
         _walls[_walls.length - 1] = new Box(new Vector3f(-10.0f, 2.0f, 5.0f));
         
+        _forces = new ArrayList<Force>();
+        _forces.add(new Gravity(new Vector3f(0, -1, 0), SPEED));
+        
         _TG = new TransformGroup();
         _TG.addChild(_player.BG);
         
@@ -64,7 +70,11 @@ public class Stage extends BranchGroup
     
     public void update()
     {
-		_player.forceAccumulator.y += -SPEED * _player.mass;
+        for (final Force f : _forces)
+        {
+            f.apply(_player);
+        }
+            
         _player.updateState(1f / WorldDirector.UPDATE_RATE);
         checkCollisions();
         _player.forceAccumulator.set(0, 0, 0);
