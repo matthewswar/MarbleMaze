@@ -8,7 +8,6 @@ import javax.media.j3d.Transform3D;
 import javax.vecmath.Vector2f;
 
 import model.Box;
-import model.HalfSpace;
 import model.Stage;
 
 public class WorldRotator extends MouseMotionAdapter 
@@ -38,20 +37,12 @@ public class WorldRotator extends MouseMotionAdapter
             rotationTransform.rotX(deltaVector.y / 128);
             rotZ.rotZ(deltaVector.x / -128);
             rotationTransform.mul(rotZ);
-            
 
-            // Rotate the extent
-            Transform3D extT3D = new Transform3D();
-            _targetStage.getTG().getTransform(extT3D);
-            extT3D.mul(rotationTransform, extT3D);
-            _targetStage.getTG().setTransform(extT3D);
-            
-            
             // Rotate each boundary
-            for (HalfSpace hs : _targetStage.getBoundaries()) 
+            for (Box b : _targetStage.getBoundaries()) 
             {    
-                rotationTransform.transform(hs.normal);
-                rotationTransform.transform(hs.dim);
+                b.OBB.T3D.mul(rotationTransform, b.OBB.T3D);
+                b.updateTransform();
             }
             
             for (Box b : _targetStage.getWalls())
@@ -59,6 +50,8 @@ public class WorldRotator extends MouseMotionAdapter
                 b.OBB.T3D.mul(rotationTransform, b.OBB.T3D);
                 b.updateTransform();
             }
+            
+            _targetStage.checkCollisions();
         }
         
         lastDragEvent = e;
