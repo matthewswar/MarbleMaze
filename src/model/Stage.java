@@ -20,7 +20,7 @@ public class Stage extends BranchGroup
 	public static final float HEIGHT = 1.0f;
 	public static final float SPEED = 100f;
     private final HalfSpace[] _platforms;
-    private final HalfSquare[] _walls;
+    private final Box[] _walls;
     private final TransformGroup _overallTG;
     private final TransformGroup _stageTG;
     private final Marble _player;
@@ -32,21 +32,21 @@ public class Stage extends BranchGroup
             new HalfSpace(0, 0, 0, 0, 1, 0, xDim, HEIGHT, zDim)
         };        
         
-        _walls = new HalfSquare[(int)(zDim / HalfSquare.DIMENSION) * 2 + 1];
+        _walls = new Box[(int)(zDim / Box.DIMENSION) * 2 + 1];
         
         for (int i = 0; i < _walls.length / 2; i++)
         {
-        	_walls[i] = new HalfSquare(-xDim / 2 + HalfSquare.DIMENSION / 2, 2.0f, 
-        								(float)(zDim / 2 - HalfSquare.DIMENSION / 2) - (HalfSquare.DIMENSION * i));
+        	_walls[i] = new Box(new Vector3f(-xDim / 2 + Box.DIMENSION / 2, 2.0f, 
+        								(float)(zDim / 2 - Box.DIMENSION / 2) - (Box.DIMENSION * i)));
         }
         
         for (int i = _walls.length / 2; i < _walls.length - 1; i++)
         {
-        	_walls[i] = new HalfSquare(xDim / 2 - HalfSquare.DIMENSION / 2, 2.0f, 
-        								(float)(zDim / 2 - HalfSquare.DIMENSION / 2) - (HalfSquare.DIMENSION * (i - _walls.length / 2)));
+        	_walls[i] = new Box(new Vector3f(xDim / 2 - Box.DIMENSION / 2, 2.0f, 
+        								(float)(zDim / 2 - Box.DIMENSION / 2) - (Box.DIMENSION * (i - _walls.length / 2))));
         }
         
-        _walls[_walls.length - 1] = new HalfSquare(-10.0f, 2.0f, 5.0f);
+        _walls[_walls.length - 1] = new Box(new Vector3f(-10.0f, 2.0f, 5.0f));
         
         setPickable(false);
         final WireframeBox box = new WireframeBox(xDim, HEIGHT, zDim);
@@ -60,9 +60,9 @@ public class Stage extends BranchGroup
         _overallTG.addChild(_player.BG);
         _overallTG.addChild(_stageTG);
         
-        for (final HalfSquare hsq : _walls)
+        for (final Box b : _walls)
         {
-        	_stageTG.addChild(hsq);
+        	_overallTG.addChild(b);
         }
         
         addChild(_overallTG);
@@ -78,9 +78,11 @@ public class Stage extends BranchGroup
         	CollisionHandler.checkMarbleCollision(_player, hs);
         }
         
-        for (final HalfSquare hsq : _walls)
-        	for (final HalfSpace hs : hsq.getBoundaries())
-        		CollisionHandler.checkMarbleCollision(_player, hs);
+        for (final Box b : _walls)
+        {
+            CollisionHandler.checkMarbleCollision(_player, b.OBB);
+            
+        }
         
         _player.updateTransformGroup();
         _player.forceAccumulator.set(0, 0, 0);
@@ -91,7 +93,7 @@ public class Stage extends BranchGroup
     	return _platforms;
     }
     
-    public HalfSquare[] getWalls()
+    public Box[] getWalls()
     {
     	return _walls;
     }
