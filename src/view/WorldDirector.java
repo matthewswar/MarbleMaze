@@ -4,6 +4,7 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 
 import javax.media.j3d.BoundingSphere;
 import javax.media.j3d.BranchGroup;
@@ -21,6 +22,7 @@ import javax.vecmath.Point3d;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
+import model.LevelScanner;
 import model.Stage;
 
 import com.sun.j3d.utils.universe.SimpleUniverse;
@@ -35,12 +37,21 @@ public class WorldDirector extends JFrame
 	public static final int UPDATE_RATE = 60;
 	private final Canvas3D _canvas;
 	private final Timer _time;
-	private final Stage _stage;
+	private TransformGroup _viewTransform;
+	private Stage _stage;
 	
 	public WorldDirector()
 	{
 		super("Marble Maze");
-		_stage = new Stage(50, 50);
+		// Personal note: Make this part better
+		_stage = null;
+		try {
+			_stage = LevelScanner.loadLevel("testlevelhard.png");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		// End make this part better
 		_canvas = new Canvas3D(SimpleUniverse.getPreferredConfiguration());
 		_time = new Timer(1000 / UPDATE_RATE, new ActionListener()
 		{
@@ -83,14 +94,13 @@ public class WorldDirector extends JFrame
 		view.setSceneAntialiasingEnable(true);
 		view.setBackClipDistance(100);
 		
-		final TransformGroup viewTransform = viewPlatform.getViewPlatformTransform();
+		_viewTransform = viewPlatform.getViewPlatformTransform();
 		final Transform3D trans = new Transform3D();
 		final Transform3D rot = new Transform3D();
-		rot.rotX(-0.25f);
-		viewTransform.getTransform(trans);
-		trans.setTranslation(new Vector3f(0, 25, 100));
+		rot.rotX(-Math.PI / 2);
+		_viewTransform.getTransform(trans);
 		trans.mul(rot);
-		viewTransform.setTransform(trans);
+		_viewTransform.setTransform(trans);
 		       
         su.addBranchGraph(createLighting());
         su.addBranchGraph(_stage);
@@ -122,6 +132,11 @@ public class WorldDirector extends JFrame
 	private void tick()
 	{
 		_stage.update();
+		final Vector3f playerPos = _stage.getPlayer().position;
+		final Transform3D trans = new Transform3D();
+		_viewTransform.getTransform(trans);
+		trans.setTranslation(new Vector3f(playerPos.x, playerPos.y + 100, playerPos.z));
+		_viewTransform.setTransform(trans);
 	}
 	
 }

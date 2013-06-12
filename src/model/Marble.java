@@ -29,7 +29,7 @@ public class Marble
 	public BranchGroup BG;
 	private TransformGroup TG;
 	private Transform3D T3D;
-	private final Vector3f _startingPosition;
+	private Vector3f _startingPosition;
 
 	public Marble(float mass, float positionX, float positionY,
 	        float positionZ, float radius, Color3f color) {
@@ -73,6 +73,11 @@ public class Marble
 	{
 		position = (Vector3f)_startingPosition.clone();
 		velocity = new Vector3f(0, 0, 0);
+	}
+	
+	public void setStartingPos(final Vector3f theStartingPos)
+	{
+		_startingPosition = (Vector3f)theStartingPos.clone();
 	}
 	
 	private Node createShape(float radius, Color3f color) {

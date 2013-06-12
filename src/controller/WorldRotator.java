@@ -51,6 +51,10 @@ public class WorldRotator extends MouseMotionAdapter
                 b.updateTransform();
             }
             
+            // Rotate player marble
+            rotationTransform.transform(_targetStage.getPlayer().position);
+            _targetStage.getPlayer().updateTransformGroup();
+            
             _targetStage.checkCollisions();
         }
         
