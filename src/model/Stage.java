@@ -22,9 +22,12 @@ public class Stage extends BranchGroup
 {
 	public static final float HEIGHT = 2.0f;
 	public static final float SPEED = 100f;
+	private List<Transformable> _transformables;
     private List<Box> _platforms;
     private List<Box> _walls;
     private List<Force> _forces;
+    private List<IntersectionTrigger> _triggers;
+    private List<PushZone> _pushZones;
     private final TransformGroup _TG;
     private final Marble _player;
     
@@ -54,12 +57,38 @@ public class Stage extends BranchGroup
         */
         
         _forces = new ArrayList<Force>();
-        _forces.add(new Gravity(new Vector3f(0, -1, 0), SPEED));
+        _forces.add(new Push(new Vector3f(0, -1, 0), SPEED));
+        
+        final Push f = new Push(new Vector3f(1, 0, 0), 250);
+        f.setEnabled(false);
+        _forces.add(f);
+        
+        _triggers = new ArrayList<IntersectionTrigger>();
+        OrientedBoundingBox obb =
+                new OrientedBoundingBox(new Vector3f(3 * Box.DIMENSION, 0, 3 * Box.DIMENSION),
+                new Vector3f(Box.DIMENSION, Box.DIMENSION, Box.DIMENSION));
+        PushZone pz = new PushZone(_player, f, obb);
+        _triggers.add(pz);
+        
+        _pushZones = new ArrayList<PushZone>();
+        _pushZones.add(pz);
+        
         _TG = new TransformGroup();
     }
     
+    private void addTransformables() {
+        _transformables = new ArrayList<Transformable>();
+        _transformables.addAll(_platforms);
+        _transformables.addAll(_walls);
+        _transformables.addAll(_triggers);
+        _transformables.add(_player);
+        // Do not add PushZones! They are already added in _triggers.
+    }
+
     public void compile()
     {
+        addTransformables();
+        
         _TG.addChild(_player.BG);
         
         for (final Box b : _platforms)
@@ -72,11 +101,19 @@ public class Stage extends BranchGroup
         	_TG.addChild(b);
         }
         
+        for (final PushZone pz : _pushZones) {
+            _TG.addChild(pz.getShape());
+        }
+        
         addChild(_TG);
     }
     
     public void update()
     {
+        for (final IntersectionTrigger t : _triggers) {
+            t.check();
+        }
+        
         for (final Force f : _forces)
         {
             f.apply(_player);
@@ -90,12 +127,12 @@ public class Stage extends BranchGroup
     public void checkCollisions() {
         for (final Box b : _platforms)
         {
-        	CollisionHandler.checkMarbleCollision(_player, b.OBB);
+        	CollisionHandler.checkMarbleCollision(_player, b.getOBB());
         }
         
         for (final Box b : _walls)
         {
-            CollisionHandler.checkMarbleCollision(_player, b.OBB);
+            CollisionHandler.checkMarbleCollision(_player, b.getOBB());
             
         }
         
@@ -110,6 +147,18 @@ public class Stage extends BranchGroup
     public List<Box> getWalls()
     {
     	return _walls;
+    }
+    
+    public List<IntersectionTrigger> getTriggers() {
+        return _triggers;
+    }
+    
+    public List<PushZone> getPushZones() {
+        return _pushZones;
+    }
+    
+    public List<Transformable> getTransformables() {
+        return _transformables;
     }
     
     public Marble getPlayer()

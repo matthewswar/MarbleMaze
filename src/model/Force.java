@@ -1,6 +1,6 @@
 package model;
 
-public abstract class Force {
+public abstract class Force implements Toggleable {
     private boolean _enabled = true;
     
     public void apply(Marble m) {

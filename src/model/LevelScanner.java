@@ -41,27 +41,30 @@ public class LevelScanner
 				
 				if (code.equals(PLATFORM))
 				{
-					platforms.add(new Box(new Vector3f(i * Box.DIMENSION, -Stage.HEIGHT, j * Box.DIMENSION), 
-											new Vector3f(Box.DIMENSION, Stage.HEIGHT, Box.DIMENSION), new Vector3f(), new Color3f(0.5f, 0.5f, 0.5f)));
+				    final OrientedBoundingBox obb = new OrientedBoundingBox(new Vector3f(i * Box.DIMENSION, -Stage.HEIGHT, j * Box.DIMENSION), 
+											new Vector3f(Box.DIMENSION, Stage.HEIGHT, Box.DIMENSION), new Vector3f());
+					platforms.add(new Box(obb, new Color3f(0.5f, 0.5f, 0.5f)));
 				}
 				else if (code.equals(WALL))
 				{
-					walls.add(new Box(new Vector3f(i * Box.DIMENSION, 0, j * Box.DIMENSION),
-										new Vector3f(Box.DIMENSION, Box.DIMENSION, Box.DIMENSION), new Vector3f(), new Color3f(0, 0, 1.0f)));
+				    final OrientedBoundingBox obb = new OrientedBoundingBox(new Vector3f(i * Box.DIMENSION, 0, j * Box.DIMENSION),
+										new Vector3f(Box.DIMENSION, Box.DIMENSION, Box.DIMENSION), new Vector3f());
+					walls.add(new Box(obb, new Color3f(0, 0, 1)));
 				}
 				else if (code.equals(STARTING_POINT))
 				{
 					final Vector3f loc = new Vector3f(i * Box.DIMENSION, -Stage.HEIGHT, j * Box.DIMENSION);
-					platforms.add(new Box((Vector3f)loc.clone(), new Vector3f(Box.DIMENSION, Stage.HEIGHT, Box.DIMENSION), 
-									new Vector3f(), new Color3f(1.0f, 1.0f, 1.0f)));
+					final OrientedBoundingBox obb = new OrientedBoundingBox((Vector3f)loc.clone(), new Vector3f(Box.DIMENSION, Stage.HEIGHT, Box.DIMENSION));
+					platforms.add(new Box(obb, new Color3f(1, 1, 1)));
 					loc.y += 5.0f;
 					result.getPlayer().position = loc;
 					result.getPlayer().setStartingPos(loc);
 				}
 				else if (code.equals(ENDING_POINT))
 				{
-					platforms.add(new Box(new Vector3f(i * Box.DIMENSION, -Stage.HEIGHT, j * Box.DIMENSION), 
-							new Vector3f(Box.DIMENSION, Stage.HEIGHT, Box.DIMENSION), new Vector3f(), new Color3f(1.0f, 0f, 0f)));
+				    final OrientedBoundingBox obb = new OrientedBoundingBox(new Vector3f(i * Box.DIMENSION, -Stage.HEIGHT, j * Box.DIMENSION), 
+							new Vector3f(Box.DIMENSION, Stage.HEIGHT, Box.DIMENSION));
+					platforms.add(new Box(obb, new Color3f(1, 0, 0)));
 				}
 			}
 		

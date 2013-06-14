@@ -7,8 +7,8 @@ import javax.media.j3d.Canvas3D;
 import javax.media.j3d.Transform3D;
 import javax.vecmath.Vector2f;
 
-import model.Box;
 import model.Stage;
+import model.Transformable;
 
 public class WorldRotator extends MouseMotionAdapter 
 {
@@ -38,31 +38,18 @@ public class WorldRotator extends MouseMotionAdapter
             rotZ.rotZ(deltaVector.x / -128);
             rotationTransform.mul(rotZ);
 
-            // Rotate each boundary
-            for (Box b : _targetStage.getBoundaries()) 
-            {    
-                b.OBB.T3D.mul(rotationTransform, b.OBB.T3D);
-                b.updateTransform();
-            }
-            
-            for (Box b : _targetStage.getWalls())
-            {
-                b.OBB.T3D.mul(rotationTransform, b.OBB.T3D);
-                b.updateTransform();
-            }
-            
-            // Rotate player marble
-            rotationTransform.transform(_targetStage.getPlayer().position);
-            _targetStage.getPlayer().updateTransformGroup();
-            
+            for (final Transformable t : _targetStage.getTransformables()) {
+                t.transform(rotationTransform);
+            } 
+           
             _targetStage.checkCollisions();
         }
         
         lastDragEvent = e;
     }
 
-    public void mouseMoved(MouseEvent e) {
+    public void mouseMoved(MouseEvent e)
+    {
         lastDragEvent = null;
     }
-	
 }

@@ -14,7 +14,7 @@ import javax.vecmath.Vector3f;
 
 import com.sun.j3d.utils.geometry.Sphere;
 
-public class Marble 
+public class Marble implements Transformable
 {
     private static final Color3f AMBIENT = new Color3f(.02f, .02f, .02f);
     private static final Color3f EMISSIVE = new Color3f(0, 0, 0);
@@ -88,5 +88,10 @@ public class Marble
 		        SPECULAR, SHININESS));
 		return new Sphere(radius, Sphere.GENERATE_NORMALS, 16, appearance);
 	}
-	
+
+    @Override
+    public void transform(Transform3D transform) {
+        transform.transform(position);
+        updateTransformGroup();
+    }
 }

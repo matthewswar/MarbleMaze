@@ -1,18 +1,15 @@
 package model;
 import javax.media.j3d.Transform3D;
-import javax.vecmath.AxisAngle4f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3d;
 import javax.vecmath.Vector3f;
 
 /*
- * Model for an oriented bounding box. Contains some convenience methods for
- * transforming the box. However, the Transform3D is public to allow for
- * arbitrary transformations. Unfortunately, this requires that users
- * of the class call updateTransform() after modifying the Transform3D.
- * Convenience methods automatically call updateTransform().
+ * Model for an oriented bounding box. Users should call updateTransform() after
+ * modifying the Transform3D returned by getTransform(). Modifying this class
+ * through transform() does not require calling updateTransform().
  */
-public class OrientedBoundingBox {    
+public class OrientedBoundingBox implements Transformable {    
     private static final Point3f[] BASE_VERTICES = {
         new Point3f(-.5f, -.5f, -.5f),
         new Point3f(.5f, -.5f, -.5f),
@@ -26,14 +23,14 @@ public class OrientedBoundingBox {
     
     private Point3f[] _vertices;
     private Vector3f[] _axes;
-    public Transform3D T3D = new Transform3D();
+    private Transform3D T3D = new Transform3D();
 
     public OrientedBoundingBox() {
     }
     
     public OrientedBoundingBox(Vector3f position) {
         T3D.setTranslation(position);
-    }  
+    }
     
     /*
      * Unit box is scaled then translated to position.
@@ -102,5 +99,15 @@ public class OrientedBoundingBox {
     public void updateTransform() {
         _vertices = null;
         _axes = null;
+    }
+
+    @Override
+    public void transform(Transform3D transform) {
+        T3D.mul(transform, T3D);
+        updateTransform();
+    }
+    
+    public Transform3D getTransform() {
+        return T3D;
     }
 }

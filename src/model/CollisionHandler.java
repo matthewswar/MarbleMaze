@@ -3,56 +3,23 @@ package model;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
-public class CollisionHandler 
-{
-	public static final float COEFFICIENT_OF_RESTITUTION = 0.3f; 
-	public static void checkMarbleCollision(final Marble theMarble, final HalfSpace theBorder)
-	{
-        float distance = theBorder.normal.dot(theMarble.position) - theBorder.intercept - theMarble.radius;
-        if (distance < 0 && inBounds(theMarble, theBorder)) 
-        {
-            // Use Torricelli's equation to approximate the particle's
-            // velocity (v_i) at the time it contacts the halfspace.
-            // v_f^2 = v_i^2 + 2 * acceleration * distance
-            
-            // Final velocity of the particle in the direction of the halfspace normal
-            float v_f = theBorder.normal.dot(theMarble.velocity);
-            // Velocity of the particle in the direction of the halfspace normal at the
-            // time of contact, squared
-            float v_i_squared = v_f * v_f - 2 * theMarble.forceAccumulator.dot(theBorder.normal) * distance;
-            // If v_i_squared is less than zero, then the quantities involved are so small
-            // that numerical inaccuracy has produced an impossible result.  The velocity
-            // at the time of contact should therefore be zero.
-            if (v_i_squared < 0)
-                v_i_squared = 0;
-            // Remove the incorrect velocity acquired after the contact and add the flipped
-            // correct velocity.
-            theMarble.velocity.scaleAdd(-v_f + COEFFICIENT_OF_RESTITUTION * (float)Math.sqrt(v_i_squared), theBorder.normal, theMarble.velocity);
-            
-            theMarble.position.scaleAdd(-distance, theBorder.normal, theMarble.position);
-        }
-	}
-	
-	private static boolean inBounds(final Marble theMarble, final HalfSpace theBorder)
-	{
-		final Vector3f pos = theMarble.position;
-		final Vector3f dim = theBorder.dim;
-		final Vector3f borderPos = theBorder.position;
-		
-		return pos.x >= (borderPos.x - dim.x / 2) &&
-				pos.x < (borderPos.x + dim.x / 2) &&
-				//pos.y >= (borderPos.y - dim.y / 2) &&
-				//pos.y < (borderPos.y + dim.y / 2) &&
-				pos.z >= (borderPos.z - dim.z / 2) &&
-				pos.z < (borderPos.z + dim.z / 2);
-	}
+public class CollisionHandler {
+	public static final float COEFFICIENT_OF_RESTITUTION = 0.3f;
 
-    public static void checkMarbleCollision(Marble m, OrientedBoundingBox o) {
+	public static void checkMarbleCollision(Marble m, OrientedBoundingBox o) {
+        final CollisionInfo ci = getCollisionInfo(m, o);   
+        if (ci.depth < 0) {
+            resolveMarbleCollision(m, ci);
+        }
+    }
+
+    public static CollisionInfo getCollisionInfo(Marble m, OrientedBoundingBox o) {
         final Point3f[] vertices = o.getVertices();
         final Vector3f[] axes = o.getAxes();
         final Vector3f min = new Vector3f();
         final Vector3f max = new Vector3f();
         getMinAndMax(vertices, axes, min, max);
+        
         final Vector3f pp = new Vector3f(m.position.dot(axes[0]), m.position.dot(axes[1]), m.position.dot(axes[2]));
         
         final Vector3f closestPoint = new Vector3f(pp);
@@ -63,8 +30,8 @@ public class CollisionHandler
         if (closestPoint.z < min.z) closestPoint.z = min.z; 
         if (closestPoint.z > max.z) closestPoint.z = max.z;
         
-        Vector3f collisionNormal;
-        float depth;
+        final CollisionInfo ci = new CollisionInfo();
+        ci.normal = new Vector3f();
         
         if (closestPoint.equals(pp)) {
             // Sphere center is inside of box or exactly on face/edge/vertex.
@@ -94,11 +61,11 @@ public class CollisionHandler
                 // Sphere center is exactly on face/edge/vertex. Approximate collision
                 // normal as a normal of one of the faces the sphere's center lies on.
                 // This should be exceedingly rare, so approximation is more than fine.
-                collisionNormal = new Vector3f(axes[closestFace / 2]);
-                depth = -m.radius;
+                ci.normal = new Vector3f(axes[closestFace / 2]);
+                ci.depth = -m.radius;
                 
                 if (closestFace % 2 == 0) {
-                    collisionNormal.negate();
+                    ci.normal.negate();
                 }
             } else {
                 // Sphere center is inside box.
@@ -108,10 +75,10 @@ public class CollisionHandler
                 cp.scaleAdd(closestPoint.y, axes[1], cp);
                 cp.scaleAdd(closestPoint.z, axes[2], cp);
                 
-                collisionNormal = new Vector3f();
-                collisionNormal.scaleAdd(-1, m.position, cp);
-                depth = -m.radius - collisionNormal.length();
-                collisionNormal.normalize();
+                ci.normal = new Vector3f();
+                ci.normal.scaleAdd(-1, m.position, cp);
+                ci.depth = -m.radius - ci.normal.length();
+                ci.normal.normalize();
             }
         } else {
             // Get closest point in world coordinates.
@@ -120,21 +87,23 @@ public class CollisionHandler
             cp.scaleAdd(closestPoint.y, axes[1], cp);
             cp.scaleAdd(closestPoint.z, axes[2], cp);
             
-            collisionNormal = new Vector3f();
-            collisionNormal.scaleAdd(-1, cp, m.position);
-            depth = -m.radius + collisionNormal.length();
-            collisionNormal.normalize();
+            ci.normal = new Vector3f();
+            ci.normal.scaleAdd(-1, cp, m.position);
+            ci.depth = -m.radius + ci.normal.length();
+            ci.normal.normalize();
         }
-            
-        if (depth < 0) {
-            float v_f = collisionNormal.dot(m.velocity);
-            float v_i_squared = Math.max(0, v_f * v_f - 2 * m.forceAccumulator.dot(collisionNormal) * depth);
-            m.velocity.scaleAdd(-v_f + COEFFICIENT_OF_RESTITUTION * (float)Math.sqrt(v_i_squared), collisionNormal, m.velocity);
-            m.position.scaleAdd(-depth, collisionNormal, m.position);
-        }
+        
+        return ci;
+    }
+    
+    private static void resolveMarbleCollision(final Marble m, CollisionInfo ci) {
+        float v_f = ci.normal.dot(m.velocity);
+        float v_i_squared = Math.max(0, v_f * v_f - 2 * m.forceAccumulator.dot(ci.normal) * ci.depth);
+        m.velocity.scaleAdd(-v_f + COEFFICIENT_OF_RESTITUTION * (float)Math.sqrt(v_i_squared), ci.normal, m.velocity);
+        m.position.scaleAdd(-ci.depth, ci.normal, m.position);
     }
 
-    private static void getMinAndMax(Point3f[] vertices, Vector3f[] axes, Vector3f min, Vector3f max) {
+	private static void getMinAndMax(Point3f[] vertices, Vector3f[] axes, Vector3f min, Vector3f max) {
         // Project each vertex onto each axis, find out the min and max components in each axes.
         min.set(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY);
         max.set(Float.NEGATIVE_INFINITY, Float.NEGATIVE_INFINITY, Float.NEGATIVE_INFINITY);
