@@ -1,7 +1,6 @@
 package model;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.media.j3d.BranchGroup;
@@ -26,16 +25,21 @@ public class Stage extends BranchGroup
     private List<Box> _platforms;
     private List<Box> _walls;
     private List<Force> _forces;
-    private List<IntersectionTrigger> _triggers;
+    private List<IntersectionTrigger> _intersectionTriggers;
     private List<PushZone> _pushZones;
     private final TransformGroup _TG;
     private final Marble _player;
     
-    public Stage(float xDim, float zDim) {
+    public Stage(float xDim, float zDim)
+    {
     	_player = new Marble(1.0f, new Vector3f(0, 5.0f, 0), 1.0f, new Color3f(1, 1, 1));
- 
         _platforms = new ArrayList<Box>();
         _walls = new ArrayList<Box>();
+        _forces = new ArrayList<Force>();
+        _intersectionTriggers = new ArrayList<IntersectionTrigger>();
+        _pushZones = new ArrayList<PushZone>();
+        _TG = new TransformGroup();
+        
         /*
         _platforms.add(new Box(new Vector3f(), new Vector3f(xDim, HEIGHT, zDim)));
         
@@ -55,34 +59,32 @@ public class Stage extends BranchGroup
         
         _walls.add(new Box(new Vector3f(-10.0f, 2.0f, 5.0f)));
         */
-        
-        _forces = new ArrayList<Force>();
+       
+        // Every level has gravity for now.
         _forces.add(new Push(new Vector3f(0, -1, 0), SPEED));
         
-        final Push f = new Push(new Vector3f(1, 0, 0), 250);
-        f.setEnabled(false);
-        _forces.add(f);
+        // Experimentation... 
+        final Push push = new Push(new Vector3f(1, 0, 0), 250);
+        push.setEnabled(false);
+        _forces.add(push);
         
-        _triggers = new ArrayList<IntersectionTrigger>();
         OrientedBoundingBox obb =
                 new OrientedBoundingBox(new Vector3f(3 * Box.DIMENSION, 0, 3 * Box.DIMENSION),
                 new Vector3f(Box.DIMENSION, Box.DIMENSION, Box.DIMENSION));
-        PushZone pz = new PushZone(_player, f, obb);
-        _triggers.add(pz);
         
-        _pushZones = new ArrayList<PushZone>();
+        PushZone pz = new PushZone(_player, push, obb);
+        
+        _intersectionTriggers.add(pz);
         _pushZones.add(pz);
-        
-        _TG = new TransformGroup();
     }
     
     private void addTransformables() {
         _transformables = new ArrayList<Transformable>();
         _transformables.addAll(_platforms);
         _transformables.addAll(_walls);
-        _transformables.addAll(_triggers);
+        _transformables.addAll(_intersectionTriggers);
         _transformables.add(_player);
-        // Do not add PushZones! They are already added in _triggers.
+        // Do not add PushZones. They are already added in _triggers.
     }
 
     public void compile()
@@ -110,7 +112,8 @@ public class Stage extends BranchGroup
     
     public void update()
     {
-        for (final IntersectionTrigger t : _triggers) {
+        for (final IntersectionTrigger t : _intersectionTriggers)
+        {
             t.check();
         }
         
@@ -149,15 +152,23 @@ public class Stage extends BranchGroup
     	return _walls;
     }
     
-    public List<IntersectionTrigger> getTriggers() {
-        return _triggers;
+    public List<Force> getForces()
+    {
+        return _forces;
     }
     
-    public List<PushZone> getPushZones() {
+    public List<IntersectionTrigger> getTriggers()
+    {
+        return _intersectionTriggers;
+    }
+    
+    public List<PushZone> getPushZones()
+    {
         return _pushZones;
     }
     
-    public List<Transformable> getTransformables() {
+    public List<Transformable> getTransformables()
+    {
         return _transformables;
     }
     
@@ -171,19 +182,9 @@ public class Stage extends BranchGroup
     	_platforms = thePlatforms;
     }
     
-    public void setPlatforms(final Box[] thePlatforms)
-    {
-    	setPlatforms(Arrays.asList(thePlatforms));
-    }
-    
     public void setWalls(final List<Box> theWalls)
     {
     	_walls = theWalls;
-    }
-    
-    public void setWalls(final Box[] theWalls)
-    {
-    	setWalls(Arrays.asList(theWalls));
     }
     
     public void setForces(final List<Force> theForces)
@@ -191,8 +192,13 @@ public class Stage extends BranchGroup
     	_forces = theForces;
     }
     
-    public void setForces(final Force[] theForces)
+    public void setIntersectionTriggers(final List<IntersectionTrigger> theTriggers)
     {
-    	setForces(Arrays.asList(theForces));
+        _intersectionTriggers = theTriggers;
+    }
+    
+    public void setPushZones(final List<PushZone> thePushZones)
+    {
+        _pushZones = thePushZones;
     }
 }
