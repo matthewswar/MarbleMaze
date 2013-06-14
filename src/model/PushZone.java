@@ -1,15 +1,22 @@
 package model;
 
+import javax.media.j3d.Appearance;
 import javax.media.j3d.BranchGroup;
+import javax.media.j3d.Material;
 import javax.media.j3d.Transform3D;
+import javax.media.j3d.TransparencyAttributes;
+import javax.vecmath.Color3f;
 
 public class PushZone extends SetEnabledOnIntersectionTrigger {
+    private static final Appearance ACTIVE_APPEARANCE = getActiveAppearance();
+    private static final Appearance INACTIVE_APPEARANCE = getInactiveAppearance();
+    
     private Box _box;
     private Push _push;
     
     public PushZone(Marble m, Push p, OrientedBoundingBox zone) {
         super(m, p, true, zone);
-        _box = new Box(zone);
+        _box = new Box(zone, INACTIVE_APPEARANCE);
         _push = p;
     }
     
@@ -21,5 +28,39 @@ public class PushZone extends SetEnabledOnIntersectionTrigger {
     
     public BranchGroup getShape() {
         return _box;
+    }
+    
+    @Override
+    public void executeOnTrue() {
+        if (!_toggleable.isEnabled()) {
+            _toggleable.setEnabled(_setOnTrue);
+            _box.setAppearance(ACTIVE_APPEARANCE);
+        }
+    }
+
+    @Override
+    public void executeOnFalse() {
+        if (_toggleable.isEnabled()) {
+            _toggleable.setEnabled(!_setOnTrue);
+            _box.setAppearance(INACTIVE_APPEARANCE);
+        }
+    } 
+    
+    private static Appearance getInactiveAppearance() {
+        final Appearance a = new Appearance();
+        final TransparencyAttributes t = new TransparencyAttributes(TransparencyAttributes.BLENDED, .5f);
+        final Material m = new Material(new Color3f(0, 0, 0), new Color3f(1, 0, 0), new Color3f(0, 0, 0), new Color3f(0, 0, 0), 100);
+        a.setTransparencyAttributes(t);
+        a.setMaterial(m);
+        return a;
+    }
+    
+    private static Appearance getActiveAppearance() {
+        final Appearance a = new Appearance();
+        final TransparencyAttributes t = new TransparencyAttributes(TransparencyAttributes.BLENDED, .5f);
+        final Material m = new Material(new Color3f(0, 0, 0), new Color3f(0, 1, 0), new Color3f(0, 0, 0), new Color3f(0, 0, 0), 100);
+        a.setTransparencyAttributes(t);
+        a.setMaterial(m);
+        return a;
     }
 }

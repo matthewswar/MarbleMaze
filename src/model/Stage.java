@@ -64,12 +64,23 @@ public class Stage extends BranchGroup
         _forces.add(new Push(new Vector3f(0, -1, 0), SPEED));
         
         // Experimentation... 
-        final Push push = new Push(new Vector3f(1, 0, 0), 250);
+        addTestPush(3, 3, new Vector3f(1, 0, 0), 250);
+        addTestPush(1, 8, new Vector3f(0, 0, 1), 250);
+        addTestPush(2, 8, new Vector3f(0, 0, 1), 250);
+        addTestPush(3, 8, new Vector3f(0, 0, 1), 250);
+        addTestPush(6, 8, new Vector3f(0, 0, -1), 250);
+        addTestPush(1, 16, new Vector3f(1, 0, 0), 250);
+     }
+    
+    private void addTestPush(int row, int col, Vector3f direction, float magnitude)
+    {
+        direction.normalize();
+        Push push = new Push(direction, magnitude);
         push.setEnabled(false);
         _forces.add(push);
         
         OrientedBoundingBox obb =
-                new OrientedBoundingBox(new Vector3f(3 * Box.DIMENSION, 0, 3 * Box.DIMENSION),
+                new OrientedBoundingBox(new Vector3f(col * Box.DIMENSION, 0, row * Box.DIMENSION),
                 new Vector3f(Box.DIMENSION, Box.DIMENSION, Box.DIMENSION));
         
         PushZone pz = new PushZone(_player, push, obb);
@@ -77,7 +88,7 @@ public class Stage extends BranchGroup
         _intersectionTriggers.add(pz);
         _pushZones.add(pz);
     }
-    
+
     private void addTransformables() {
         _transformables = new ArrayList<Transformable>();
         _transformables.addAll(_platforms);

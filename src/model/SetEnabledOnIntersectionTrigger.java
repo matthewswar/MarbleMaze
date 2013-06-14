@@ -2,8 +2,8 @@ package model;
 
 
 public class SetEnabledOnIntersectionTrigger extends IntersectionTrigger {
-    private Toggleable _toggleable;
-    private boolean _setOnTrue;
+    protected Toggleable _toggleable;
+    protected boolean _setOnTrue;
     
     public SetEnabledOnIntersectionTrigger(Marble m, Toggleable t,
             boolean setOnTrue, OrientedBoundingBox obb) {
