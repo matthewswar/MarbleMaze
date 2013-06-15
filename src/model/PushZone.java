@@ -49,7 +49,7 @@ public class PushZone extends SetEnabledOnIntersectionTrigger {
     private static Appearance getInactiveAppearance() {
         final Appearance a = new Appearance();
         final TransparencyAttributes t = new TransparencyAttributes(TransparencyAttributes.BLENDED, .5f);
-        final Material m = new Material(new Color3f(0, 0, 0), new Color3f(1, 0, 0), new Color3f(0, 0, 0), new Color3f(0, 0, 0), 100);
+        final Material m = new Material(new Color3f(0, 0, 0), new Color3f(0, 0, 0), new Color3f(1, 0, 0), new Color3f(1, 1, 1), 100);
         a.setTransparencyAttributes(t);
         a.setMaterial(m);
         return a;
@@ -58,7 +58,7 @@ public class PushZone extends SetEnabledOnIntersectionTrigger {
     private static Appearance getActiveAppearance() {
         final Appearance a = new Appearance();
         final TransparencyAttributes t = new TransparencyAttributes(TransparencyAttributes.BLENDED, .5f);
-        final Material m = new Material(new Color3f(0, 0, 0), new Color3f(0, 1, 0), new Color3f(0, 0, 0), new Color3f(0, 0, 0), 100);
+        final Material m = new Material(new Color3f(0, 0, 0), new Color3f(0, 0, 0), new Color3f(0, 1, 0), new Color3f(1, 1, 1), 100);
         a.setTransparencyAttributes(t);
         a.setMaterial(m);
         return a;
