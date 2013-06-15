@@ -41,33 +41,18 @@ public class Stage extends BranchGroup
         _TG = new TransformGroup();
         
         // Every level has gravity for now.
-        _forces.add(new Push(new Vector3f(0, -1, 0), SPEED));
+        //_forces.add(new Push(new Vector3f(0, -1, 0), SPEED)); //This line has been added to LevelScanner
         
-        // Experimentation... 
+        // Experimentation...
+        /*
         addTestPush(3, 3, new Vector3f(1, 0, 0), 250);
         addTestPush(1, 8, new Vector3f(0, 0, 1), 250);
         addTestPush(2, 8, new Vector3f(0, 0, 1), 250);
         addTestPush(3, 8, new Vector3f(0, 0, 1), 250);
         addTestPush(6, 8, new Vector3f(0, 0, -1), 250);
         addTestPush(1, 16, new Vector3f(1, 0, 0), 250);
+        */
      }
-    
-    private void addTestPush(int row, int col, Vector3f direction, float magnitude)
-    {
-        direction.normalize();
-        Push push = new Push(direction, magnitude);
-        push.setEnabled(false);
-        _forces.add(push);
-        
-        OrientedBoundingBox obb =
-                new OrientedBoundingBox(new Vector3f(col * Box.DIMENSION, 0, row * Box.DIMENSION),
-                new Vector3f(Box.DIMENSION, Box.DIMENSION, Box.DIMENSION));
-        
-        PushZone pz = new PushZone(_player, push, obb);
-        
-        _intersectionTriggers.add(pz);
-        _pushZones.add(pz);
-    }
 
     private void addTransformables() {
         _transformables = new ArrayList<Transformable>();
@@ -191,5 +176,11 @@ public class Stage extends BranchGroup
     public void setPushZones(final List<PushZone> thePushZones)
     {
         _pushZones = thePushZones;
+    }
+    
+    public void addZones(final PushZone thePZ)
+    {
+		 _intersectionTriggers.add(thePZ);
+		 _pushZones.add(thePZ);
     }
 }
