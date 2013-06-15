@@ -49,7 +49,6 @@ public class Box extends BranchGroup implements Transformable {
 
     public void updateTransform() {
         _TG.setTransform(_OBB.getTransform());
-        _OBB.updateTransform();
     }
     
     public Transform3D getTransform() {

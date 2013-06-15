@@ -12,83 +12,93 @@ public class CollisionHandler {
             resolveMarbleCollision(m, ci);
         }
     }
-
+	
     public static CollisionInfo getCollisionInfo(Marble m, OrientedBoundingBox o) {
-        final Point3f[] vertices = o.getVertices();
+        // OBB axes not normalized. Will normalize below.
         final Vector3f[] axes = o.getAxes();
-        final Vector3f min = new Vector3f();
-        final Vector3f max = new Vector3f();
-        getMinAndMax(vertices, axes, min, max);
         
-        final Vector3f pp = new Vector3f(m.position.dot(axes[0]), m.position.dot(axes[1]), m.position.dot(axes[2]));
+        // Closest point in OBB to sphere's center. Start it at OBB's center.
+        final Point3f closestPointOnOBB = o.getCenter();
         
-        final Vector3f closestPoint = new Vector3f(pp);
-        if (closestPoint.x < min.x) closestPoint.x = min.x; 
-        if (closestPoint.x > max.x) closestPoint.x = max.x; 
-        if (closestPoint.y < min.y) closestPoint.y = min.y; 
-        if (closestPoint.y > max.y) closestPoint.y = max.y; 
-        if (closestPoint.z < min.z) closestPoint.z = min.z; 
-        if (closestPoint.z > max.z) closestPoint.z = max.z;
+        // Vector from box center to sphere center.
+        final Vector3f centerToCenter = new Vector3f(m.position);
+        centerToCenter.sub(closestPointOnOBB);
+        
+        // Component of center to center vector in a given OBB axis.
+        final float[] componentInAxis = new float[3];
+        
+        // Signed distance to closest face in a given OBB axis.
+        final float[] distanceToFace = new float[3];
+        
+        // Project centerToCenter onto each axis. If sphere center beyond extent
+        // of OBB, clamp closest point to surface of OBB in that axis.
+        for (int i = 0; i < axes.length; i++) {
+            final Vector3f axis = axes[i];
+            final float halfBoxLength = axis.length() / 2;
+            axis.normalize();
+            componentInAxis[i] = centerToCenter.dot(axis);
+            float component = componentInAxis[i];
+            
+            if (component > 0) {
+                distanceToFace[i] = halfBoxLength - component;
+                
+                if (component > halfBoxLength) {
+                    component = halfBoxLength;
+                }
+            } else {
+                distanceToFace[i] = -halfBoxLength - component;
+                
+                if (component < -halfBoxLength) {
+                    component = -halfBoxLength;
+                }
+            }
+           
+            closestPointOnOBB.scaleAdd(component, axis, closestPointOnOBB);
+        }
         
         final CollisionInfo ci = new CollisionInfo();
         ci.normal = new Vector3f();
         
-        if (closestPoint.equals(pp)) {
+        if (closestPointOnOBB.epsilonEquals(m.position, .0001f)) {
             // Sphere center is inside of box or exactly on face/edge/vertex.
             // This should be rather rare.
             
-            // Find point and face closest to center of sphere.
-            int closestFace = 0;
-            float minDistance = closestPoint.x - min.x;
-            float temp;
-            if ((temp = max.x - closestPoint.x) < minDistance) { minDistance = temp; closestFace = 1; };
-            if ((temp = closestPoint.y - min.y) < minDistance) { minDistance = temp; closestFace = 2; };
-            if ((temp = max.y - closestPoint.y) < minDistance) { minDistance = temp; closestFace = 3; };
-            if ((temp = closestPoint.z - min.z) < minDistance) { minDistance = temp; closestFace = 4; };
-            if ((temp = max.z - closestPoint.x) < minDistance) { minDistance = temp; closestFace = 5; };
+            // Find face closest to center of sphere, then push the closest
+            // point onto it.
+            final float a = Math.abs(distanceToFace[0]);
+            final float b = Math.abs(distanceToFace[1]);
+            final float c = Math.abs(distanceToFace[2]);
+            int closestFaceIndex = 0;
             
-            // Push the closest point, currently inside OBB, onto the closest face.
-            switch (closestFace) {
-            case 0: closestPoint.x = min.x; break;
-            case 1: closestPoint.x = max.x; break;
-            case 2: closestPoint.y = min.y; break;
-            case 3: closestPoint.y = max.y; break;
-            case 4: closestPoint.z = min.z; break;
-            case 5: closestPoint.z = max.z; break;
+            if (b <= a && b <= c) {
+                closestFaceIndex = 1;
+            } else if (c <= a) {
+                closestFaceIndex = 2;
             }
             
-            if (closestPoint.equals(pp)) {
+            closestPointOnOBB.scaleAdd(distanceToFace[closestFaceIndex], axes[closestFaceIndex]);
+            
+            if (closestPointOnOBB.epsilonEquals(m.position, .0001f)) {
                 // Sphere center is exactly on face/edge/vertex. Approximate collision
                 // normal as a normal of one of the faces the sphere's center lies on.
                 // This should be exceedingly rare, so approximation is more than fine.
-                ci.normal = new Vector3f(axes[closestFace / 2]);
+                ci.normal = new Vector3f(axes[closestFaceIndex]);
                 ci.depth = -m.radius;
                 
-                if (closestFace % 2 == 0) {
+                if (componentInAxis[closestFaceIndex] < 0) {
                     ci.normal.negate();
                 }
             } else {
-                // Sphere center is inside box.
-                // Get closest point in world coordinates.
-                Vector3f cp = new Vector3f();
-                cp.scaleAdd(closestPoint.x, axes[0], cp);
-                cp.scaleAdd(closestPoint.y, axes[1], cp);
-                cp.scaleAdd(closestPoint.z, axes[2], cp);
-                
+                // Sphere center was inside of box.
                 ci.normal = new Vector3f();
-                ci.normal.scaleAdd(-1, m.position, cp);
+                ci.normal.scaleAdd(-1, m.position, closestPointOnOBB);
                 ci.depth = -m.radius - ci.normal.length();
                 ci.normal.normalize();
             }
         } else {
-            // Get closest point in world coordinates.
-            Vector3f cp = new Vector3f();
-            cp.scaleAdd(closestPoint.x, axes[0], cp);
-            cp.scaleAdd(closestPoint.y, axes[1], cp);
-            cp.scaleAdd(closestPoint.z, axes[2], cp);
-            
+            // Sphere center was outside of box.
             ci.normal = new Vector3f();
-            ci.normal.scaleAdd(-1, cp, m.position);
+            ci.normal.scaleAdd(-1, closestPointOnOBB, m.position);
             ci.depth = -m.radius + ci.normal.length();
             ci.normal.normalize();
         }
@@ -102,34 +112,4 @@ public class CollisionHandler {
         m.velocity.scaleAdd(-v_f + COEFFICIENT_OF_RESTITUTION * (float)Math.sqrt(v_i_squared), ci.normal, m.velocity);
         m.position.scaleAdd(-ci.depth, ci.normal, m.position);
     }
-
-	private static void getMinAndMax(Point3f[] vertices, Vector3f[] axes, Vector3f min, Vector3f max) {
-        // Project each vertex onto each axis, find out the min and max components in each axes.
-        min.set(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY);
-        max.set(Float.NEGATIVE_INFINITY, Float.NEGATIVE_INFINITY, Float.NEGATIVE_INFINITY);
-        
-        for (final Point3f point : vertices) {
-            final Vector3f vertex = new Vector3f(point);
-            float c = vertex.dot(axes[0]);
-            if (c < min.x) {
-                min.x = c;
-            } else if (c > max.x) {
-                max.x = c;
-            }
-            
-            c = vertex.dot(axes[1]);
-            if (c < min.y) {
-                min.y = c;
-            } else if (c > max.y) {
-                max.y = c;
-            }
-            
-            c = vertex.dot(axes[2]);
-            if (c < min.z) {
-                min.z = c;
-            } else if (c > max.z) {
-                max.z = c;
-            }
-        }
-   }
 }
