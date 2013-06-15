@@ -40,26 +40,6 @@ public class Stage extends BranchGroup
         _pushZones = new ArrayList<PushZone>();
         _TG = new TransformGroup();
         
-        /*
-        _platforms.add(new Box(new Vector3f(), new Vector3f(xDim, HEIGHT, zDim)));
-        
-        final int testBoxes = (int)(zDim / Box.DIMENSION) * 2 + 1;
-        
-        for (int i = 0; i < testBoxes / 2; i++)
-        {
-        	_walls.add(new Box(new Vector3f(-xDim / 2 + Box.DIMENSION / 2, 2.0f, 
-        								(float)(zDim / 2 - Box.DIMENSION / 2) - (Box.DIMENSION * i))));
-        }
-        
-        for (int i = testBoxes / 2; i < testBoxes - 1; i++)
-        {
-        	_walls.add(new Box(new Vector3f(xDim / 2 - Box.DIMENSION / 2, 2.0f, 
-        								(float)(zDim / 2 - Box.DIMENSION / 2) - (Box.DIMENSION * (i - testBoxes / 2)))));
-        }
-        
-        _walls.add(new Box(new Vector3f(-10.0f, 2.0f, 5.0f)));
-        */
-       
         // Every level has gravity for now.
         _forces.add(new Push(new Vector3f(0, -1, 0), SPEED));
         

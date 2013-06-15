@@ -84,8 +84,6 @@ public class WorldDirector extends JFrame
 	
 	private void setupWorld()
 	{
-		_canvas.addMouseMotionListener(new WorldRotator(_canvas, _stage));
-		_canvas.addKeyListener(new KeyboardHandler(_stage.getPlayer()));
 		final SimpleUniverse su = new SimpleUniverse(_canvas);
 		final ViewingPlatform viewPlatform = su.getViewingPlatform();
 		viewPlatform.setNominalViewingTransform();
@@ -104,7 +102,8 @@ public class WorldDirector extends JFrame
 		       
         su.addBranchGraph(createLighting());
         su.addBranchGraph(_stage);
-        
+		_canvas.addMouseMotionListener(new WorldRotator(_canvas, _stage));
+		_canvas.addKeyListener(new KeyboardHandler(_stage.getPlayer(), _viewTransform));
 	}
 	
 	private BranchGroup createLighting()
@@ -137,6 +136,16 @@ public class WorldDirector extends JFrame
 		_viewTransform.getTransform(trans);
 		trans.setTranslation(new Vector3f(playerPos.x, playerPos.y + 100, playerPos.z));
 		_viewTransform.setTransform(trans);
+		if (playerPos.y < -100)
+		{
+			handleGameLost();
+		}
+		
+	}
+	
+	private void handleGameLost()
+	{
+		_stage.getPlayer().reset();
 	}
 	
 }

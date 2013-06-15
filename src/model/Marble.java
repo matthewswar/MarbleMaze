@@ -92,6 +92,7 @@ public class Marble implements Transformable
     @Override
     public void transform(Transform3D transform) {
         transform.transform(position);
+        transform.transform(_startingPosition);
         updateTransformGroup();
     }
 }
