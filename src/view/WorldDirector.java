@@ -140,10 +140,19 @@ public class WorldDirector extends JFrame
 		{
 			handleGameLost();
 		}
+		else if (_stage.getPlayer().isWinner())
+		{
+			handleGameWin();
+		}
 		
 	}
 	
 	private void handleGameLost()
+	{
+		_stage.getPlayer().reset();
+	}
+	
+	private void handleGameWin()
 	{
 		_stage.getPlayer().reset();
 	}

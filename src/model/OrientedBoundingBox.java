@@ -24,20 +24,23 @@ public class OrientedBoundingBox implements Transformable {
     private Point3f[] _vertices;
     private Vector3f[] _axes;
     private Transform3D T3D = new Transform3D();
-
-    public OrientedBoundingBox() {
-    }
+    private boolean _isGoal;
     
+    public OrientedBoundingBox()
+    {
+    	this(new Vector3f(), new Vector3f(), new Vector3f());
+    }
+
     public OrientedBoundingBox(Vector3f position) {
-        T3D.setTranslation(position);
+        this(position, new Vector3f(), new Vector3f());
+        
     }
     
     /*
      * Unit box is scaled then translated to position.
      */
     public OrientedBoundingBox(Vector3f position, Vector3f dimensions) {
-        T3D.setTranslation(position);
-        T3D.setScale(new Vector3d(dimensions));
+        this(position, dimensions, new Vector3f());
     }  
     
     /*
@@ -45,6 +48,7 @@ public class OrientedBoundingBox implements Transformable {
      * in X-Y-Z order by angles specified in rotation vector.
      */
     public OrientedBoundingBox(Vector3f position, Vector3f dimensions, Vector3f rotation) {
+    	_isGoal = false;
         T3D.setTranslation(position);
         Transform3D temp = new Transform3D();
         temp.rotZ(rotation.z);
@@ -58,6 +62,7 @@ public class OrientedBoundingBox implements Transformable {
     }
     
     public OrientedBoundingBox(OrientedBoundingBox obb) {
+    	_isGoal = false;
         T3D = new Transform3D(obb.T3D);
     }
      
@@ -109,5 +114,15 @@ public class OrientedBoundingBox implements Transformable {
     
     public Transform3D getTransform() {
         return T3D;
+    }
+    
+    public void setIsGoal(final boolean theGoal)
+    {
+    	_isGoal = theGoal;
+    }
+    
+    public boolean isGoal()
+    {
+    	return _isGoal;
     }
 }

@@ -33,15 +33,11 @@ public class LevelScanner
 		for (int i = 0; i < img.getWidth(); i++)
 			for (int j = 0; j < img.getHeight(); j++)
 			{
-				final int colors = img.getRGB(i, j) & ALPHA_UNMASK;
-				final int r = (colors & RED_MASK) >> 16;
-				final int g = (colors & GREEN_MASK) >> 8;
-				final int b = colors & BLUE_MASK;
-				final Color code = new Color(r, g, b);
-				
+				final Color code = getPixelColor(img, i, j);
 				if (code.equals(PLATFORM))
 				{
-				    final OrientedBoundingBox obb = new OrientedBoundingBox(new Vector3f(i * Box.DIMENSION, -Stage.HEIGHT, j * Box.DIMENSION), 
+				    final OrientedBoundingBox obb = 
+				    new OrientedBoundingBox(new Vector3f(i * Box.DIMENSION, -Stage.HEIGHT, j * Box.DIMENSION), 
 											new Vector3f(Box.DIMENSION, Stage.HEIGHT, Box.DIMENSION), new Vector3f());
 					platforms.add(new Box(obb, new Color3f(0.5f, 0.5f, 0.5f)));
 				}
@@ -54,7 +50,8 @@ public class LevelScanner
 				else if (code.equals(STARTING_POINT))
 				{
 					final Vector3f loc = new Vector3f(i * Box.DIMENSION, -Stage.HEIGHT, j * Box.DIMENSION);
-					final OrientedBoundingBox obb = new OrientedBoundingBox((Vector3f)loc.clone(), new Vector3f(Box.DIMENSION, Stage.HEIGHT, Box.DIMENSION));
+					final OrientedBoundingBox obb = 
+							new OrientedBoundingBox((Vector3f)loc.clone(), new Vector3f(Box.DIMENSION, Stage.HEIGHT, Box.DIMENSION));
 					platforms.add(new Box(obb, new Color3f(1, 1, 1)));
 					loc.y += 5.0f;
 					result.getPlayer().position = loc;
@@ -62,9 +59,12 @@ public class LevelScanner
 				}
 				else if (code.equals(ENDING_POINT))
 				{
-				    final OrientedBoundingBox obb = new OrientedBoundingBox(new Vector3f(i * Box.DIMENSION, -Stage.HEIGHT, j * Box.DIMENSION), 
+				    final OrientedBoundingBox obb = 
+				    		new OrientedBoundingBox(new Vector3f(i * Box.DIMENSION, -Stage.HEIGHT, j * Box.DIMENSION), 
 							new Vector3f(Box.DIMENSION, Stage.HEIGHT, Box.DIMENSION));
-					platforms.add(new Box(obb, new Color3f(1, 0, 0)));
+				    final Box endPlatform = new Box(obb, new Color3f(1, 0, 0));
+				    endPlatform.setIsGoal(true);
+					platforms.add(endPlatform);
 				}
 			}
 		
@@ -74,5 +74,18 @@ public class LevelScanner
 		result.compile();
 		
 		return result;
+	}
+	
+	private static Color getPixelColor(final BufferedImage theImg, final int theWidth, 
+										final int theHeight)
+	{
+		if (theWidth > theImg.getWidth() || theHeight > theImg.getHeight())
+			return null;
+		
+		final int colors = theImg.getRGB(theWidth, theHeight) & ALPHA_UNMASK;
+		final int r = (colors & RED_MASK) >> 16;
+		final int g = (colors & GREEN_MASK) >> 8;
+		final int b = colors & BLUE_MASK;
+		return new Color(r, g, b);
 	}
 }

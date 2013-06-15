@@ -30,6 +30,7 @@ public class Marble implements Transformable
 	private TransformGroup TG;
 	private Transform3D T3D;
 	private Vector3f _startingPosition;
+	private boolean _isWinner;
 
 	public Marble(float mass, float positionX, float positionY,
 	        float positionZ, float radius, Color3f color) {
@@ -50,6 +51,7 @@ public class Marble implements Transformable
 		T3D = new Transform3D();
 		updateTransformGroup();
 		_startingPosition = (Vector3f)position.clone();
+		_isWinner = false;
 	}
 	
 	public Marble(float mass, Tuple3f position, float radius, Color3f color) {
@@ -73,6 +75,7 @@ public class Marble implements Transformable
 	{
 		position = (Vector3f)_startingPosition.clone();
 		velocity = new Vector3f(0, 0, 0);
+		_isWinner = false;
 	}
 	
 	public void setStartingPos(final Vector3f theStartingPos)
@@ -94,5 +97,15 @@ public class Marble implements Transformable
         transform.transform(position);
         transform.transform(_startingPosition);
         updateTransformGroup();
+    }
+    
+    public void triggerWin()
+    {
+    	_isWinner = true;
+    }
+    
+    public boolean isWinner()
+    {
+    	return _isWinner;
     }
 }
