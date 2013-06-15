@@ -10,6 +10,10 @@ public class CollisionHandler {
         final CollisionInfo ci = getCollisionInfo(m, o);   
         if (ci.depth < 0) {
             resolveMarbleCollision(m, ci);
+            if (o.isGoal())
+            {
+            	m.triggerWin();
+            }
         }
     }
 	

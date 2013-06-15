@@ -12,15 +12,21 @@ import model.Transformable;
 
 public class WorldRotator extends MouseMotionAdapter 
 {
+	public static final double MAX_ANGLE = Math.PI / 6;
 	private MouseEvent lastDragEvent;
 	private final Canvas3D _targetCanvas;
 	private final Stage _targetStage;
+	
+	private static float xRot;
+	private static float zRot;
 	
 	public WorldRotator(final Canvas3D theTargetCanvas, final Stage theTargetStage)
 	{
 		super();
 		_targetCanvas = theTargetCanvas;
 		_targetStage = theTargetStage;
+		xRot = 0;
+		zRot = 0;
 	}
 
     public void mouseDragged(MouseEvent e)
@@ -32,6 +38,30 @@ public class WorldRotator extends MouseMotionAdapter
             Vector2f deltaVector = new Vector2f();
             deltaVector.scaleAdd(-1, lastMouseVector, currentMouseVector);
             
+            final float deltaX = deltaVector.y / 128;
+            final float deltaZ = deltaVector.x / -128;
+            
+            if (Math.abs(xRot + deltaX) < Math.abs(xRot) || Math.abs(xRot) < MAX_ANGLE)
+            {
+            	xRot += deltaX;
+            	Transform3D rotationTransform = new Transform3D();
+            	rotationTransform.rotX(deltaX);
+                for (final Transformable t : _targetStage.getTransformables()) {
+                    t.transform(rotationTransform);
+                } 
+            }
+            
+            if (Math.abs(zRot + deltaZ) < Math.abs(zRot) || Math.abs(zRot) < MAX_ANGLE)
+            {
+            	zRot += deltaZ;
+            	Transform3D rotationTransform = new Transform3D();
+            	rotationTransform.rotZ(deltaZ);
+                for (final Transformable t : _targetStage.getTransformables()) {
+                    t.transform(rotationTransform);
+                } 
+            }
+            
+            /*
             Transform3D rotationTransform = new Transform3D();
             Transform3D rotZ = new Transform3D();
             rotationTransform.rotX(deltaVector.y / 128);
@@ -41,7 +71,7 @@ public class WorldRotator extends MouseMotionAdapter
             for (final Transformable t : _targetStage.getTransformables()) {
                 t.transform(rotationTransform);
             } 
-           
+           */
             _targetStage.checkCollisions();
         }
         

@@ -9,7 +9,10 @@ import javax.vecmath.Vector3f;
  * modifying the Transform3D returned by getTransform(). Modifying this class
  * through transform() does not require calling updateTransform().
  */
-public class OrientedBoundingBox implements Transformable {    
+public class OrientedBoundingBox implements Transformable { 
+    private static final Vector3f ZERO_VECTOR = new Vector3f();
+    private static final Vector3f DEFAULT_DIMENSIONS = new Vector3f(1, 1, 1);
+    
     private static final Point3f[] BASE_VERTICES = {
         new Point3f(-.5f, -.5f, -.5f),
         new Point3f(.5f, -.5f, -.5f),
@@ -22,17 +25,22 @@ public class OrientedBoundingBox implements Transformable {
     };
     
     private Transform3D T3D = new Transform3D();
+    private boolean _isGoal;
+    
+    public OrientedBoundingBox() {
+        this(ZERO_VECTOR, DEFAULT_DIMENSIONS, ZERO_VECTOR);
+    }
 
     public OrientedBoundingBox(Vector3f position) {
-        T3D.setTranslation(position);
+        this(position, DEFAULT_DIMENSIONS, ZERO_VECTOR);
+        
     }
     
     /*
      * Unit box is scaled then translated to position.
      */
     public OrientedBoundingBox(Vector3f position, Vector3f dimensions) {
-        T3D.setTranslation(position);
-        T3D.setScale(new Vector3d(dimensions));
+        this(position, dimensions, ZERO_VECTOR);
     }  
     
     /*
@@ -40,6 +48,7 @@ public class OrientedBoundingBox implements Transformable {
      * in X-Y-Z order by angles specified in rotation vector.
      */
     public OrientedBoundingBox(Vector3f position, Vector3f dimensions, Vector3f rotation) {
+    	_isGoal = false;
         T3D.setTranslation(position);
         Transform3D temp = new Transform3D();
         temp.rotZ(rotation.z);
@@ -53,6 +62,7 @@ public class OrientedBoundingBox implements Transformable {
     }
     
     public OrientedBoundingBox(OrientedBoundingBox obb) {
+    	_isGoal = false;
         T3D = new Transform3D(obb.T3D);
     }
      
@@ -106,5 +116,15 @@ public class OrientedBoundingBox implements Transformable {
     
     public Transform3D getTransform() {
         return T3D;
+    }
+    
+    public void setIsGoal(final boolean theGoal)
+    {
+    	_isGoal = theGoal;
+    }
+    
+    public boolean isGoal()
+    {
+    	return _isGoal;
     }
 }
