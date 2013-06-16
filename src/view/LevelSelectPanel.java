@@ -27,6 +27,7 @@ public class LevelSelectPanel extends JPanel
 	public LevelSelectPanel()
 	{
 		super();
+		_levelPath = "";
 		_pickDefault = new JRadioButton("Default Level");
 		_pickCustom = new JRadioButton("Custom Level");
 		setLayout(new BorderLayout());
