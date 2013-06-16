@@ -1,8 +1,22 @@
+/*
+ * Tyson Nottingham
+ * Matthew Swartzendruber
+ * 6/16/2013
+ * Homework 4: Marble Maze
+ */
+
 package model;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
+/**
+ * 
+ * @author Nottingham, Swartzendruber
+ * @version June 16th, 2013
+ *
+ * A class that aids in the detection and resolution of collisions between objects.
+ */
 public class CollisionHandler {
 	public static final float COEFFICIENT_OF_RESTITUTION = 0.3f;
 

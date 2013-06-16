@@ -1,3 +1,10 @@
+/*
+ * Tyson Nottingham
+ * Matthew Swartzendruber
+ * 6/16/2013
+ * Homework 4: Marble Maze
+ */
+
 package controller;
 
 import java.awt.event.MouseEvent;
@@ -10,16 +17,52 @@ import javax.vecmath.Vector2f;
 import model.Stage;
 import model.Transformable;
 
+/**
+ * 
+ * @author Nottingham, Swartzendruber
+ * @version June 16th, 2013
+ * 
+ * Handles mouse controls that rotate the world and everything inside of it.
+ *
+ */
 public class WorldRotator extends MouseMotionAdapter 
 {
+	/**
+	 * The maximum angle the world is allowed to rotate.
+	 */
 	public static final double MAX_ANGLE = Math.PI / 6;
+	
+	/**
+	 * The state of the last mouse drag event.
+	 */
 	private MouseEvent lastDragEvent;
+	
+	/**
+	 * The view that renders everything within the world.
+	 */
 	private final Canvas3D _targetCanvas;
+	
+	/**
+	 * The level to be rotated.
+	 */
 	private final Stage _targetStage;
 	
+	/**
+	 * The current rotation around the x-axis.
+	 */
 	private static float xRot;
+	
+	/**
+	 * The current rotation around the z-axis.
+	 */
 	private static float zRot;
 	
+	/**
+	 * Creates an object that targets the given canvas and stage for rotation.
+	 * 
+	 * @param theTargetCanvas Canvas that renders the world.
+	 * @param theTargetStage The stage to be rotated.
+	 */
 	public WorldRotator(final Canvas3D theTargetCanvas, final Stage theTargetStage)
 	{
 		super();
@@ -29,6 +72,9 @@ public class WorldRotator extends MouseMotionAdapter
 		zRot = 0;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
     public void mouseDragged(MouseEvent e)
     {
         if (lastDragEvent != null) 
@@ -43,6 +89,7 @@ public class WorldRotator extends MouseMotionAdapter
             
             if (Math.abs(xRot + deltaX) < Math.abs(xRot) || Math.abs(xRot) < MAX_ANGLE)
             {
+            	// Rotate along the x-axis if able
             	xRot += deltaX;
             	Transform3D rotationTransform = new Transform3D();
             	rotationTransform.rotX(deltaX);
@@ -53,6 +100,7 @@ public class WorldRotator extends MouseMotionAdapter
             
             if (Math.abs(zRot + deltaZ) < Math.abs(zRot) || Math.abs(zRot) < MAX_ANGLE)
             {
+            	// Rotate along the z-axis if able
             	zRot += deltaZ;
             	Transform3D rotationTransform = new Transform3D();
             	rotationTransform.rotZ(deltaZ);
@@ -67,6 +115,9 @@ public class WorldRotator extends MouseMotionAdapter
         lastDragEvent = e;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void mouseMoved(MouseEvent e)
     {
         lastDragEvent = null;

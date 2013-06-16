@@ -1,3 +1,10 @@
+/*
+ * Tyson Nottingham
+ * Matthew Swartzendruber
+ * 6/16/2013
+ * Homework 4: Marble Maze
+ */
+
 import java.io.IOException;
 
 import javax.swing.JOptionPane;
@@ -8,7 +15,7 @@ import view.WorldDirector;
 
 
 public class MazeDriver 
-{
+{	
 	public static void main(final String[] theArgs)
 	{
 		SwingUtilities.invokeLater(new Runnable() 

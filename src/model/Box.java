@@ -1,3 +1,10 @@
+/*
+ * Tyson Nottingham
+ * Matthew Swartzendruber
+ * 6/16/2013
+ * Homework 4: Marble Maze
+ */
+
 package model;
 import java.awt.Color;
 
@@ -9,7 +16,10 @@ import javax.media.j3d.Transform3D;
 import javax.media.j3d.TransformGroup;
 import javax.vecmath.Color3f;
 
-/*
+/**
+ * @author Nottingham, Swartzendruber
+ * @version June 16th, 2013
+ * 
  * View and model for representing a box. Users should call updateTransform()
  * after modifying the Transform3D returned by getTransform() or after modifying
  * the Transform of the OBB returned by getOBB(). Modifying this class through

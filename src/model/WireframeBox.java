@@ -1,6 +1,12 @@
-package model;
 /*
  * Tyson Nottingham
+ * Matthew Swartzendruber
+ * 6/16/2013
+ * Homework 4: Marble Maze
+ */
+
+package model;/*
+
  * Matthew Swartzendruber
  * 5/5/2013
  * Homework 2: Particle System

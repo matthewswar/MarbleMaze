@@ -1,3 +1,10 @@
+/*
+ * Tyson Nottingham
+ * Matthew Swartzendruber
+ * 6/16/2013
+ * Homework 4: Marble Maze
+ */
+
 package model;
 
 import java.awt.Color;
@@ -14,6 +21,14 @@ import javax.vecmath.Vector3f;
 
 import com.sun.j3d.utils.geometry.Sphere;
 
+/**
+ * 
+ * @author Nottingham, Swartzendruber
+ * @version June 16th, 2013
+ * 
+ * A sphere that represents the player.
+ *
+ */
 public class Marble implements Transformable
 {
     private static final Color3f AMBIENT = new Color3f(.02f, .02f, .02f);
