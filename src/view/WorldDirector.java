@@ -1,6 +1,9 @@
 package view;
 
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -37,12 +40,39 @@ public class WorldDirector extends JFrame
 	private final Timer _time;
 	private TransformGroup _viewTransform;
 	private Stage _stage;
+	private int _previousScore;
 	
 	public WorldDirector(final Stage theLevel)
 	{
 		super("Marble Maze");
 		_stage = theLevel;
-		_canvas = new Canvas3D(SimpleUniverse.getPreferredConfiguration());
+		_previousScore = 0;
+		_canvas = new Canvas3D(SimpleUniverse.getPreferredConfiguration())
+		{
+			private final String _wins = "Wins: ";
+			private final String _score = "Score: ";
+			private final String _lastScore = "Previous Score: ";
+
+			public void postRender()
+			{
+				final String winCount = _wins + _stage.getWins();
+				final String scoreCount = _score + _stage.getScore();
+				final String last = _lastScore + _previousScore;
+				final int resolution = getSize().height; 
+				final int fontSize = (int)Math.round(resolution / 25);
+				final Font font = new Font("Impact", Font.PLAIN, fontSize);
+				final FontMetrics fm = getGraphics2D().getFontMetrics(font);
+				this.getGraphics2D().setColor(Color.WHITE);
+				this.getGraphics2D().setFont(font);
+				this.getGraphics2D().drawString(scoreCount, 10, fm.getHeight());
+				this.getGraphics2D().drawString(winCount, 
+						getSize().width - fm.stringWidth(winCount) - 10, fm.getHeight());
+				this.getGraphics2D().drawString(last, 10, 
+						getSize().height - fm.getHeight() / 5);
+				this.getGraphics2D().flush(false);
+			}
+		};
+		
 		_time = new Timer(1000 / UPDATE_RATE, new ActionListener()
 		{
 			public void actionPerformed(final ActionEvent theEvent) 
@@ -139,12 +169,17 @@ public class WorldDirector extends JFrame
 	
 	private void handleGameLost()
 	{
-		_stage.getPlayer().reset();
+		if (_stage.getScore() == 0)
+			_stage.reset();
+		else
+			_stage.getPlayer().reset();
 	}
 	
 	private void handleGameWin()
 	{
-		_stage.getPlayer().reset();
+		_previousScore = _stage.getScore();
+		_stage.reset();
+		_stage.playerWin();
 	}
 	
 }

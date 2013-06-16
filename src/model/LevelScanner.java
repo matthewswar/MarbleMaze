@@ -13,6 +13,7 @@ import javax.vecmath.Vector3f;
 
 public class LevelScanner 
 {
+	public static final int SCORE_MULTIPLIER = 10;
 	public static final int ALPHA_UNMASK = 0x00FFFFFF;
 	public static final int RED_MASK = 0x00FF0000;
 	public static final int GREEN_MASK = 0x0000FF00;
@@ -78,7 +79,7 @@ public class LevelScanner
 				    new OrientedBoundingBox(new Vector3f(i * Box.DIMENSION, -Stage.HEIGHT, j * Box.DIMENSION), 
 											new Vector3f(Box.DIMENSION, Stage.HEIGHT, Box.DIMENSION), new Vector3f());
 					platforms.add(new Box(obb, new Color3f(0.5f, 0.5f, 0.5f)));
-					final double angle = (code.getGreen() * MAX_DEGREE) / MAX_COLOR_VAL;
+					final double angle = ((code.getGreen() * MAX_DEGREE) / MAX_COLOR_VAL) * (Math.PI / 180);
 					final int mag = (code.getBlue() * MAX_MAGNITUDE) / MAX_COLOR_VAL;
 					addPush(j, i, new Vector3f((float)Math.cos(angle), 0, 
 										(float)Math.sin(angle)), mag, forces, result);
@@ -86,6 +87,7 @@ public class LevelScanner
 				}
 			}
 		
+		result.setStartingScore(img.getHeight() * img.getWidth() * SCORE_MULTIPLIER);
 		result.setPlatforms(platforms);
 		result.setWalls(walls);
 		result.setForces(forces);
