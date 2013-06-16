@@ -150,8 +150,7 @@ public class LevelScanner
 	}
 	
     private static void addPush(int row, int col, Vector3f direction, float magnitude, 
-    								final List<Force> forces, final Stage result)
-    {
+    								final List<Force> forces, final Stage result) {
         direction.normalize();
         Push push = new Push(direction, magnitude);
         push.setEnabled(false);
