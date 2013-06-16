@@ -49,16 +49,17 @@ public class OrientedBoundingBox implements Transformable {
      */
     public OrientedBoundingBox(Vector3f position, Vector3f dimensions, Vector3f rotation) {
     	_isGoal = false;
-        T3D.setTranslation(position);
         Transform3D temp = new Transform3D();
-        temp.rotZ(rotation.z);
-        T3D.mul(temp);
-        temp.rotY(rotation.y);
-        T3D.mul(temp);
-        temp.rotX(rotation.x);
-        T3D.mul(temp);
         temp.setScale(new Vector3d(dimensions));
-        T3D.mul(temp);
+        T3D.mul(temp, T3D);
+        temp.rotX(rotation.x);
+        T3D.mul(temp, T3D);
+        temp.rotY(rotation.y);
+        T3D.mul(temp, T3D);
+        temp.rotZ(rotation.z);
+        T3D.mul(temp, T3D);
+        temp.set(position);
+        T3D.mul(temp, T3D);
     }
     
     public OrientedBoundingBox(OrientedBoundingBox obb) {
