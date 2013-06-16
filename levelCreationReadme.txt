@@ -1,6 +1,6 @@
 Levels must be created with a small (usually around 10x10 pixel) PNG image.
 Recognized color codes:
-	Blue (0, 0, 255) - The spawning location of the marble.
+	Blue (0, 0, 255) - The spawning block of the marble.
 	Red  (255, 0, 0) - The goal block the marble must reach.
 	White (255, 255, 255) - Platforms the marble can traverse.
 	Black (0, 0, 0) - Walls the marble can collide with.

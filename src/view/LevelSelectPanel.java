@@ -42,7 +42,8 @@ public class LevelSelectPanel extends JPanel
 		final JPanel levelOptions = new JPanel(new GridLayout(2, 1));
 		final JPanel buttonOptions = new JPanel(new FlowLayout());
 		final JButton chooseFile = new JButton("No level selected");
-		final JButton viewHelp = new JButton("?");
+		final JButton viewHelp = new JButton("Basic");
+		final JButton advHelp = new JButton("Advanced");
 		final ButtonGroup bg = new ButtonGroup();
 		bg.add(_pickDefault);
 		bg.add(_pickCustom);
@@ -87,12 +88,33 @@ public class LevelSelectPanel extends JPanel
 			}
 		});
 		
+		advHelp.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed(final ActionEvent theEvent)
+			{
+				try 
+				{
+					final Scanner readme = new Scanner(new File("levelCreationAdvReadme.txt"));
+					readme.useDelimiter("\\Z");
+					final String contents = readme.next();
+					readme.close();
+					JOptionPane.showMessageDialog(null, contents);
+				}
+				catch (FileNotFoundException e) 
+				{
+					JOptionPane.showMessageDialog(null, "Readme file not found.");
+				}
+			}
+		});
+		
 		
 		_pickDefault.setSelected(true);
 		
 		buttonOptions.add(_pickCustom);
 		buttonOptions.add(chooseFile);
 		buttonOptions.add(viewHelp);
+		buttonOptions.add(advHelp);
 		levelOptions.add(_pickDefault);
 		levelOptions.add(buttonOptions);
 		add(levelOptions);
