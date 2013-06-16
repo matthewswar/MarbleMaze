@@ -154,7 +154,7 @@ public class WorldDirector extends JFrame
 		final Vector3f playerPos = _stage.getPlayer().position;
 		final Transform3D trans = new Transform3D();
 		_viewTransform.getTransform(trans);
-		trans.setTranslation(new Vector3f(playerPos.x, playerPos.y + 100, playerPos.z));
+		trans.setTranslation(new Vector3f(playerPos.x, playerPos.y + 200, playerPos.z));
 		_viewTransform.setTransform(trans);
 		if (playerPos.y < -100)
 		{
