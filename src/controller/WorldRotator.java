@@ -61,17 +61,6 @@ public class WorldRotator extends MouseMotionAdapter
                 } 
             }
             
-            /*
-            Transform3D rotationTransform = new Transform3D();
-            Transform3D rotZ = new Transform3D();
-            rotationTransform.rotX(deltaVector.y / 128);
-            rotZ.rotZ(deltaVector.x / -128);
-            rotationTransform.mul(rotZ);
-
-            for (final Transformable t : _targetStage.getTransformables()) {
-                t.transform(rotationTransform);
-            } 
-           */
             _targetStage.checkCollisions();
         }
         

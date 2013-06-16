@@ -15,7 +15,7 @@ import javax.vecmath.Vector3f;
 
 public class LevelScanner 
 {
-	public static final int SCORE_MULTIPLIER = 10;
+	public static final int SCORE_MULTIPLIER = 5;
 	public static final int ALPHA_UNMASK = 0x00FFFFFF;
 	public static final int RED_MASK = 0x00FF0000;
 	public static final int GREEN_MASK = 0x0000FF00;
@@ -28,6 +28,8 @@ public class LevelScanner
 	public static final Color STARTING_POINT = new Color(0, 0, MAX_COLOR_VAL);
 	public static final Color ENDING_POINT = new Color(MAX_COLOR_VAL, 0, 0);
 	public static final Color WALL = new Color(0, 0, 0);
+	
+	private static int _totalScore;
 
     private static final FilenameFilter PNG_FILE_FILTER = new FilenameFilter() {
         public boolean accept(File dir, String name) {
@@ -47,6 +49,7 @@ public class LevelScanner
     
 	public static Stage loadLevel(final String theFileLocation) throws IOException
 	{
+		_totalScore = 0;
         final File fileOrDirectory = new File(theFileLocation);
         final ArrayList<File> files = new ArrayList<File>();
         if (fileOrDirectory.isDirectory()) {
@@ -64,6 +67,7 @@ public class LevelScanner
                 loadLayer(stage, files.get(i), i);
             }
             
+            stage.setStartingScore(_totalScore);
             stage.compile();
             
             return stage;
@@ -73,7 +77,7 @@ public class LevelScanner
             final List<Box> platforms = new ArrayList<Box>();
             final List<Box> walls = new ArrayList<Box>();
             final List<Force> forces = new ArrayList<Force>(); 
-            
+            _totalScore = img.getHeight() * img.getWidth() * SCORE_MULTIPLIER;
             forces.add(new Push(new Vector3f(0, -1, 0), Stage.SPEED));
             
             for (int i = 0; i < img.getWidth(); i++)
@@ -118,7 +122,7 @@ public class LevelScanner
                         new OrientedBoundingBox(new Vector3f(i * Box.DIMENSION, -Stage.HEIGHT, j * Box.DIMENSION), 
                                                 new Vector3f(Box.DIMENSION, Stage.HEIGHT, Box.DIMENSION), new Vector3f());
                         platforms.add(new Box(obb, new Color3f(0.5f, 0.5f, 0.5f)));
-                        final double angle = ((code.getGreen() * MAX_DEGREE) / MAX_COLOR_VAL) * (Math.PI / 180);
+                        final double angle = (code.getGreen() * MAX_RADIANS) / MAX_COLOR_VAL;
                         final int mag = (code.getBlue() * MAX_MAGNITUDE) / MAX_COLOR_VAL;
                         addPush(j, i, new Vector3f((float)Math.cos(angle), 0, 
                                             (float)Math.sin(angle)), mag, forces, result);
@@ -126,7 +130,7 @@ public class LevelScanner
                     }
                 }
             
-            result.setStartingScore(img.getHeight() * img.getWidth() * SCORE_MULTIPLIER);
+            result.setStartingScore(_totalScore);
             result.setPlatforms(platforms);
             result.setWalls(walls);
             result.setForces(forces);
@@ -171,6 +175,7 @@ public class LevelScanner
         final List<Box> platforms = stage.getBoundaries();
         final List<Box> walls = stage.getWalls();
         final List<Force> forces = stage.getForces(); 
+        _totalScore += img.getHeight() * img.getWidth() * SCORE_MULTIPLIER;
         
         for (int i = 0; i < img.getWidth(); i++) {
             for (int j = 0; j < img.getHeight(); j++) {
