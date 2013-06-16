@@ -13,6 +13,7 @@ import javax.vecmath.Vector3f;
 
 public class LevelScanner 
 {
+	public static final int SCORE_MULTIPLIER = 10;
 	public static final int ALPHA_UNMASK = 0x00FFFFFF;
 	public static final int RED_MASK = 0x00FF0000;
 	public static final int GREEN_MASK = 0x0000FF00;
@@ -86,6 +87,7 @@ public class LevelScanner
 				}
 			}
 		
+		result.setStartingScore(img.getHeight() * img.getWidth() * SCORE_MULTIPLIER);
 		result.setPlatforms(platforms);
 		result.setWalls(walls);
 		result.setForces(forces);

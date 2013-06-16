@@ -21,6 +21,7 @@ public class Stage extends BranchGroup
 {
 	public static final float HEIGHT = 2.0f;
 	public static final float SPEED = 100f;
+	public int _startingScore;
 	private List<Transformable> _transformables;
     private List<Box> _platforms;
     private List<Box> _walls;
@@ -29,6 +30,8 @@ public class Stage extends BranchGroup
     private List<PushZone> _pushZones;
     private final TransformGroup _TG;
     private final Marble _player;
+    private int _wins;
+    private int _score;
     
     public Stage(float xDim, float zDim)
     {
@@ -39,19 +42,8 @@ public class Stage extends BranchGroup
         _intersectionTriggers = new ArrayList<IntersectionTrigger>();
         _pushZones = new ArrayList<PushZone>();
         _TG = new TransformGroup();
-        
-        // Every level has gravity for now.
-        //_forces.add(new Push(new Vector3f(0, -1, 0), SPEED)); //This line has been added to LevelScanner
-        
-        // Experimentation...
-        /*
-        addTestPush(3, 3, new Vector3f(1, 0, 0), 250);
-        addTestPush(1, 8, new Vector3f(0, 0, 1), 250);
-        addTestPush(2, 8, new Vector3f(0, 0, 1), 250);
-        addTestPush(3, 8, new Vector3f(0, 0, 1), 250);
-        addTestPush(6, 8, new Vector3f(0, 0, -1), 250);
-        addTestPush(1, 16, new Vector3f(1, 0, 0), 250);
-        */
+        _wins = 0;
+        setStartingScore(500);
      }
 
     private void addTransformables() {
@@ -101,6 +93,8 @@ public class Stage extends BranchGroup
         _player.updateState(1f / WorldDirector.UPDATE_RATE);
         checkCollisions();
         _player.forceAccumulator.set(0, 0, 0);
+        if (_score > 0)
+        	_score--;
     }
     
     public void checkCollisions() {
@@ -182,5 +176,32 @@ public class Stage extends BranchGroup
     {
 		 _intersectionTriggers.add(thePZ);
 		 _pushZones.add(thePZ);
+    }
+    
+    public void playerWin()
+    {
+    	_wins++;
+    }
+    
+    public int getWins()
+    {
+    	return _wins;
+    }
+    
+    public void reset()
+    {
+    	_player.reset();
+    	_score = _startingScore;
+    }
+    
+    public int getScore()
+    {
+    	return _score;
+    }
+    
+    public void setStartingScore(final int theStart)
+    {
+        _startingScore = theStart;
+        _score = _startingScore;
     }
 }
