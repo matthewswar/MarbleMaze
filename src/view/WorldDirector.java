@@ -4,7 +4,6 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
 
 import javax.media.j3d.BoundingSphere;
 import javax.media.j3d.BranchGroup;
@@ -22,7 +21,6 @@ import javax.vecmath.Point3d;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
-import model.LevelScanner;
 import model.Stage;
 
 import com.sun.j3d.utils.universe.SimpleUniverse;
@@ -40,18 +38,10 @@ public class WorldDirector extends JFrame
 	private TransformGroup _viewTransform;
 	private Stage _stage;
 	
-	public WorldDirector()
+	public WorldDirector(final Stage theLevel)
 	{
 		super("Marble Maze");
-		// Personal note: Make this part better
-		_stage = null;
-		try {
-			_stage = LevelScanner.loadLevel("testlevelhard.png");
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		// End make this part better
+		_stage = theLevel;
 		_canvas = new Canvas3D(SimpleUniverse.getPreferredConfiguration());
 		_time = new Timer(1000 / UPDATE_RATE, new ActionListener()
 		{
