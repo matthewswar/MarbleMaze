@@ -79,7 +79,7 @@ public class LevelScanner
 				    new OrientedBoundingBox(new Vector3f(i * Box.DIMENSION, -Stage.HEIGHT, j * Box.DIMENSION), 
 											new Vector3f(Box.DIMENSION, Stage.HEIGHT, Box.DIMENSION), new Vector3f());
 					platforms.add(new Box(obb, new Color3f(0.5f, 0.5f, 0.5f)));
-					final double angle = (code.getGreen() * MAX_DEGREE) / MAX_COLOR_VAL;
+					final double angle = ((code.getGreen() * MAX_DEGREE) / MAX_COLOR_VAL) * (Math.PI / 180);
 					final int mag = (code.getBlue() * MAX_MAGNITUDE) / MAX_COLOR_VAL;
 					addPush(j, i, new Vector3f((float)Math.cos(angle), 0, 
 										(float)Math.sin(angle)), mag, forces, result);
