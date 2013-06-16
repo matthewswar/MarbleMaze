@@ -54,11 +54,15 @@ public class LevelSelectPanel extends JPanel
 			{
 				final JFileChooser fc = 
 						new JFileChooser(Paths.get("").toAbsolutePath().toString());
+				fc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 				if (fc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION);
 				{
-					_levelPath = fc.getSelectedFile().getAbsolutePath();
-					chooseFile.setText(fc.getSelectedFile().getName());
-					_pickCustom.setSelected(true);
+				    final File file = fc.getSelectedFile();
+				    if (file != null) {
+    					_levelPath = file.getAbsolutePath();
+    					chooseFile.setText(file.getName());
+    					_pickCustom.setSelected(true);
+				    }
 				}
 			}
 		});
