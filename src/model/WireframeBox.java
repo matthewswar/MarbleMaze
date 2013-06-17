@@ -22,7 +22,12 @@ import javax.vecmath.Point3d;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3d;
 
-
+/**
+ * 
+ * @author Nottingham, Swartzendruber
+ * @version June 16th, 2013
+ *
+ */
 public class WireframeBox extends BranchGroup {
     private Point3d[] VERTICES = {
         new Point3d(-1, -1, 1), new Point3d(-1, 1, 1),

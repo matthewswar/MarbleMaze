@@ -14,6 +14,14 @@ import javax.media.j3d.Transform3D;
 import javax.media.j3d.TransparencyAttributes;
 import javax.vecmath.Color3f;
 
+/**
+ * 
+ * @author Nottingham, Swartzendruber
+ * @version June 16th, 2013
+ * 
+ * A field on the stage that is represented by a box that pushes the marble in the specified direction.
+ *
+ */
 public class PushZone extends SetEnabledOnIntersectionTrigger {
     private static final Appearance ACTIVE_APPEARANCE = getActiveAppearance();
     private static final Appearance INACTIVE_APPEARANCE = getInactiveAppearance();

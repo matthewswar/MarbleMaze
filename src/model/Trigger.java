@@ -7,6 +7,12 @@
 
 package model;
 
+/**
+ * 
+ * @author Nottingham, Swartzendruber
+ * @version June 16th, 2013
+ *
+ */
 public abstract class Trigger implements Toggleable {
     protected boolean _enabled = true;
     

@@ -11,7 +11,10 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Vector3d;
 import javax.vecmath.Vector3f;
 
-/*
+/**
+ * @author Nottingham, Swartzendruber
+ * @version June 16th, 2013
+ * 
  * Model for an oriented bounding box. Users should call updateTransform() after
  * modifying the Transform3D returned by getTransform(). Modifying this class
  * through transform() does not require calling updateTransform().
@@ -32,6 +35,10 @@ public class OrientedBoundingBox implements Transformable {
     };
     
     private Transform3D T3D = new Transform3D();
+    
+    /**
+     * Whether or not this box knows that it is the goal block.
+     */
     private boolean _isGoal;
     
     public OrientedBoundingBox() {

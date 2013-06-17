@@ -7,7 +7,12 @@
 
 package model;
 
-
+/**
+ * 
+ * @author Nottingham, Swartzendruber
+ * @version June 16th, 2013
+ *
+ */
 public class SetEnabledOnIntersectionTrigger extends IntersectionTrigger {
     protected Toggleable _toggleable;
     protected boolean _setOnTrue;

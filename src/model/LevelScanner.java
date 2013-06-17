@@ -168,8 +168,7 @@ public class LevelScanner
             
             Collections.sort(files);
             
-            final BufferedImage img = ImageIO.read(files.get(0));
-            final Stage stage = new Stage(img.getWidth(), img.getHeight());
+            final Stage stage = new Stage();
             stage.getForces().add(new Push(new Vector3f(0, -1, 0), Stage.SPEED));
             
             for (int i = 0; i < files.size(); i++) {
@@ -182,7 +181,7 @@ public class LevelScanner
             return stage;
         } else {
             final BufferedImage img = ImageIO.read(new File(theFileLocation));
-            final Stage result = new Stage(img.getWidth(), img.getHeight());
+            final Stage result = new Stage();
             final List<Box> platforms = new ArrayList<Box>();
             final List<Box> walls = new ArrayList<Box>();
             final List<Force> forces = new ArrayList<Force>(); 

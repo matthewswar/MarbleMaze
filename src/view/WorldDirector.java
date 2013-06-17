@@ -39,16 +39,52 @@ import com.sun.j3d.utils.universe.ViewingPlatform;
 import controller.KeyboardHandler;
 import controller.WorldRotator;
 
+/**
+ * 
+ * @author Nottingham, Swartzendruber
+ * @version June 16th, 2013
+ * 
+ * A window that contains the viewport into the virtual world.
+ *
+ */
 @SuppressWarnings("serial")
 public class WorldDirector extends JFrame
 {
+	/**
+	 * The amount of times the world is updated every second.
+	 */
 	public static final int UPDATE_RATE = 60;
+	
+	/**
+	 * The viewport into the virtual world.
+	 */
 	private final Canvas3D _canvas;
+	
+	/**
+	 * The timer that ticks UPDATE_RATE times a second.
+	 */
 	private final Timer _time;
+	
+	/**
+	 * The transformation matrix of the camera.
+	 */
 	private TransformGroup _viewTransform;
+	
+	/**
+	 * The stage that the marble traverses around.
+	 */
 	private Stage _stage;
+	
+	/**
+	 * The score the player previously received.
+	 */
 	private int _previousScore;
 	
+	/**
+	 * Creates a window that displays the virtual world to the user.
+	 * 
+	 * @param theLevel The level the marble must traverse.
+	 */
 	public WorldDirector(final Stage theLevel)
 	{
 		super("Marble Maze");
@@ -62,6 +98,7 @@ public class WorldDirector extends JFrame
 
 			public void postRender()
 			{
+				// Draw on the canvas the amount of wins and the score
 				final String winCount = _wins + _stage.getWins();
 				final String scoreCount = _score + _stage.getScore();
 				final String last = _lastScore + _previousScore;
@@ -80,6 +117,7 @@ public class WorldDirector extends JFrame
 			}
 		};
 		
+		// Create a timer but do not start it yet
 		_time = new Timer(1000 / UPDATE_RATE, new ActionListener()
 		{
 			public void actionPerformed(final ActionEvent theEvent) 
@@ -91,6 +129,9 @@ public class WorldDirector extends JFrame
 		});
 	}
 	
+	/**
+	 * Populates the window and starts the timer.
+	 */
 	public void start()
 	{
 		setPreferredSize(new Dimension(800, 600));
@@ -109,6 +150,9 @@ public class WorldDirector extends JFrame
 		setVisible(true);
 	}
 	
+	/**
+	 * Adds all of the necessary components of the virtual world render.
+	 */
 	private void setupWorld()
 	{
 		final SimpleUniverse su = new SimpleUniverse(_canvas);
@@ -133,6 +177,9 @@ public class WorldDirector extends JFrame
 		_canvas.addKeyListener(new KeyboardHandler(_stage.getPlayer(), _viewTransform));
 	}
 	
+	/**
+	 * @return A branch group for the lighting of the world.
+	 */
 	private BranchGroup createLighting()
 	{
 		final BranchGroup lighting = new BranchGroup();
@@ -155,6 +202,9 @@ public class WorldDirector extends JFrame
         return lighting;
 	}
 	
+	/**
+	 * Updates the stage, checks for win/lose states, and ensures the camera follows the player.
+	 */
 	private void tick()
 	{
 		_stage.update();
@@ -174,6 +224,9 @@ public class WorldDirector extends JFrame
 		
 	}
 	
+	/**
+	 * Handles lose states.
+	 */
 	private void handleGameLost()
 	{
 		if (_stage.getScore() == 0)
@@ -182,6 +235,9 @@ public class WorldDirector extends JFrame
 			_stage.getPlayer().reset();
 	}
 	
+	/**
+	 * Handles win states.
+	 */
 	private void handleGameWin()
 	{
 		_previousScore = _stage.getScore();

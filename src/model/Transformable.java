@@ -9,6 +9,12 @@ package model;
 
 import javax.media.j3d.Transform3D;
 
+/**
+ * 
+ * @author Nottingham, Swartzendruber
+ * @version June 16th, 2013
+ *
+ */
 public interface Transformable {
     public void transform(Transform3D transform);
 }

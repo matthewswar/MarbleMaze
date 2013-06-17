@@ -7,6 +7,12 @@
 
 package model;
 
+/**
+ * 
+ * @author Nottingham, Swartzendruber
+ * @version June 16th, 2013
+ *
+ */
 public interface Toggleable {
     void setEnabled(boolean enabled);
     boolean isEnabled();
