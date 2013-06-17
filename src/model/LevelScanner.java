@@ -33,7 +33,7 @@ public class LevelScanner
 	/**
 	 * Multiplies the starting score for the level.
 	 */
-	public static final int SCORE_MULTIPLIER = 5;
+	public static final int SCORE_MULTIPLIER = 10;
 	
 	/**
 	 * Removes the alpha channel from the RGB value.
@@ -282,7 +282,7 @@ public class LevelScanner
         final List<Box> platforms = stage.getBoundaries();
         final List<Box> walls = stage.getWalls();
         final List<Force> forces = stage.getForces(); 
-        _totalScore += img.getHeight() * img.getWidth() * SCORE_MULTIPLIER;
+        _totalScore += img.getHeight() * img.getWidth();
         
         for (int i = 0; i < img.getWidth(); i++) {
             for (int j = 0; j < img.getHeight(); j++) {
